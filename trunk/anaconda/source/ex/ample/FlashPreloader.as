@@ -1,0 +1,1 @@
+package ex.ample {	import mvc.core.Preloader;	/**	 * // ex.ample.FlashPreloader	 */ 	public class FlashPreloader extends Preloader {		/**		 * Constructor		 */		public function FlashPreloader() {			trace ( "+ FlashPreloader.FlashPreloader() - args: " + [  ] );		}	}}

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Export MVC [Anaconda]-project" default="compile">
+
+	<!-- directories -->
+	<property name="src.dir" value="${basedir}/../source/ex/ample/" />
+	<property name="deploy.dir" value="${basedir}/../deploy/" />
+
+	<!-- project specific -->
+	<property name="project.name" value="abc-mvc" />
+	<property name="compile.arg" value="" />
+
+	<!-- source names -->
+	<property name="main.class" value="FlashApp.as" />
+	<property name="preloader.class" value="FlashPreloader.as" />
+	<property name="main.swf" value="main.swf" />
+	<property name="preloader.swf" value="preloader.swf" />
+
+
+	<!-- -->
+	<target name="compile" depends="main SWF, preloader SWF" description="Create a preloader and main without debug functionality" />
+	<target name="compile debug" depends="main debug SWF, preloader debug SWF" description="Create a preloader and main with debug functionality" />
+
+	<!--  file size -->
+	<target name="Show file size">
+		<length property="filesize" mode="all">
+			<fileset file="${deploy.dir}${main.swf}" />
+		</length>
+		<echo>${main.swf} is ${filesize} bytes</echo>
+	</target>
+
+	<!-- main swf zonder debug -->
+	<target name="main SWF">
+		<echo>Compile ${main.swf}</echo>
+		<fdt.launch.application 
+			projectname="${project.name}" 
+			mainclass="${src.dir}${main.class}" 
+			target="${deploy.dir}${main.swf}" 
+			debug="false" 
+			compilerarguments="${compile.arg}" />
+		<length property="filesize" mode="all">
+			<fileset file="${deploy.dir}${main.swf}" />
+		</length>
+		<echo>${main.swf} is ${filesize} bytes</echo>
+		<echo>--> Complete ${main.swf}</echo>
+	</target>
+
+	<target name="preloader SWF">
+		<echo>Compile ${preloader.swf}</echo>
+		<fdt.launch.application 
+			projectname="${project.name}" 
+			mainclass="${src.dir}${preloader.class}" 
+			target="${deploy.dir}${preloader.swf}" 
+			startswf="true" debug="false" 
+			swflauncher="External SWF Viewer" 
+			compilerarguments="${compile.arg}" />
+		<length property="filesize" mode="all">
+			<fileset file="${deploy.dir}${preloader.swf}" />
+		</length>
+		<echo>${preloader.swf} is ${filesize} bytes</echo>
+		<echo>--> Complete ${preloader.swf}</echo>
+	</target>
+
+	<!-- main swf MET debug -->
+	<target name="main debug SWF">
+		<echo>Compile DEBUG ${main.swf}</echo>
+		<fdt.launch.application 
+			projectname="${project.name}" 
+			mainclass="${src.dir}${main.class}" 
+			target="${deploy.dir}${main.swf}" 
+			debug="true" 
+			compilerarguments="${compile.arg}" />
+		<echo>--> Complete ${main.swf}</echo>
+	</target>
+
+	<target name="preloader debug SWF">
+		<echo>Compile DEBUG ${preloader.swf}</echo>
+		<fdt.launch.application 
+			projectname="${project.name}" 
+			mainclass="${src.dir}${preloader.class}" 
+			target="${deploy.dir}${preloader.swf}" 
+			startswf="true" 
+			debug="true" 
+			swflauncher="External SWF Viewer" 
+			compilerarguments="${compile.arg}" />
+		<echo>--> Complete DEBUG ${preloader.swf}</echo>
+	</target>
+	
+	
+	<target name="debug_application">
+		<fdt.startDebugger projectname="${project.name}"/>
+		<fdt.extSWFViewer.startSWF
+			file="${deploy.dir}index.html"
+			width="800"
+			height="600"
+		/>
+	</target>
+	
+	<target name="debug_browser">
+		<fdt.startDebugger projectname="${project.name}" />
+		<fdt.browse location="${deploy.dir}index.html" />
+	</target>
+	
+</project>
