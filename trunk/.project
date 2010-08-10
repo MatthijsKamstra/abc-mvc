@@ -14,4 +14,16 @@
 	<natures>
 		<nature>com.powerflasher.fdt.core.FlashNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>NOISELibrary</name>
+			<type>2</type>
+			<locationURI>NOISELibrary</locationURI>
+		</link>
+		<link>
+			<name>swc</name>
+			<type>2</type>
+			<locationURI>swc</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

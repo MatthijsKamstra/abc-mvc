@@ -1,0 +1,1 @@
+package ex.ample.views {	import assets.view.Alfa;	import mvc.core.View;	/**	 * @author Matthijs Kamstra aka [mck]	 */	public class AlfaView extends View {		/**		 * Constructor		 */		public function AlfaView(  ) {			addChild(new Alfa());		}	}}
