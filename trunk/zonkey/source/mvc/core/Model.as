@@ -11,7 +11,7 @@ package mvc.core {	import flash.events.Event;	import flash.events.EventDispatc
 		public function set viewNameArray(inViewName : *) : void {
 			_viewNameArray.push(inViewName);
 		}		/**		 * return XML		 */
-		public function get xml() : XML {			var __xml : XML = _xml;			if (__xml == null) __xml = null;			return __xml;		}		//////////////////////////////////////// remove ////////////////////////////////////////	
+		public function get xml() : XML {			var __xml : XML = _xml;			if (__xml == null) __xml = null;			return __xml;		}		/**		 * create a quick ViewName package		 */		public function outputViewNamePackage() : void {			trace ("package nl.xxx.yyy.data.enum {" +			"/**" +			"* @author Matthijs Kamstra aka [mck]" +			"*/" +			"public class ViewNames {");			var array:Array = Model.getInstance().viewNameArray;			for (var i : int = 0; i < array.length; i++) {				var name:String = array[i];				trace ("static public const " + name.toUpperCase() + ":String = '" + name + "';");			}				trace ("}" +			"}");		}		//////////////////////////////////////// remove ////////////////////////////////////////	
 				/**		 * little hack to remove the automatic add from every view		 */		public function removeViewNameFromArray() : void {
 			// only when you init a view, and you don't want it managed by the model, 			// call this function to remove it from the show/hide list
 			_viewNameArray.pop();
