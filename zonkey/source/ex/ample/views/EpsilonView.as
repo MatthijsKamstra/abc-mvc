@@ -1,6 +1,7 @@
 package ex.ample.views {
 	import assets.view.Epsilon;
 
+	import mvc.core.Controller;
 	import mvc.core.View;
 
 	/**
@@ -8,7 +9,8 @@ package ex.ample.views {
 	 */
 	public class EpsilonView extends View {
 
-		public function EpsilonView( ) {
+		public function EpsilonView( inController : Controller = null, inType : String = VIEW_DEFAULT) {
+			super(inController, inType);
 			addChild(new Epsilon());
 		}
 	}
