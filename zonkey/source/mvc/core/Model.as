@@ -39,7 +39,12 @@ package mvc.core {
 
 		/**		 * 		 */
 		public function updateView(event : String) : void {
-			// If no events defined yet, then send out the first event.
+			// If no events defined yet, then send out the first event.			
+			if (!checkEventName(event)){
+				trace ("****** Check '"+event+"' event name, it doesn't exist! *******");
+				return;
+			}
+
 			if( _event.length == 0 ) {
 				_event = event;
 				dispatchEvent(new Event(event));
@@ -52,6 +57,19 @@ package mvc.core {
 			// Send out an all events request.
 			dispatchEvent(new Event(Model.ALL_EVENTS));
 		}
+
+		// check if this viewname is present, otherwise the mvc will breaks
+		private function checkEventName (inEvent:String):Boolean{
+			var _boo:Boolean = false;
+			for (var i : int = 0; i < _viewNameArray.length; i++) {
+				if (inEvent == _viewNameArray[i]) {
+					_boo = true;
+					break;
+				}
+			}
+			return _boo;
+		}
+
 
 		/**		 * @example		Model.getInstance().showDefaultView();		 * 		 * first View initiated will be the default view		 */
 		public function showDefaultView() : void {
