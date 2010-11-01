@@ -1,3 +1,24 @@
+/**
+ * Every view (extention of the view) has a function that waits for the stage init
+ * 		@example
+ * 				override protected function stageReady():void {
+ * 					// code that waits for the stage.
+ * 					stage.addEventListener(EventNames.SHOW_UPLOAD, showBigTab);
+ * 				}
+ * 				
+ * 				
+ * 				
+ * 	Listen to the "onShowFinished"
+ * 		@example	
+ * 				addEventListener(ViewEvent.ON_SHOW_FINISHED, build);
+ * 				
+ * 				
+ * 				
+ * 	Show/trace the hidden stuff (debug trace / mouse blockers)
+ * 		@example	
+ * 				isDebugMode = true; // default is false 			
+ * 		
+ */
 package mvc.core {
 	import mvc.utils.ClassUtil;
 
@@ -18,37 +39,56 @@ package mvc.core {
 	 * otherwise it will react like a "normal" Movieclip
 	 */
 	public class View extends MovieClip {
+		
+		// label names
+		// TODO: [mck] is this not using it twice (@see ViewEvent.as)
+		public static var LABEL_SHOW : String = "show";
+		public static var LABEL_HIDE : String = "hide";
+		public static var LABEL_SHOW_FINISHED : String = "onShowFinished";
+		public static var LABEL_HIDE_FINISHED : String = "onHideFinished";
+		
 		// default frames for the show and hide
 		private static var SHOW_FRAME : int = -1;
 		private static var HIDE_FRAME : int = -1;
 		private static var SHOW_FINISHED_FRAME : int = -1;
 		private static var HIDE_FINISHED_FRAME : int = -1;
+		
 		// abc-mvc stuff
 		private var _model : Model;
 		private var _controller : Controller = null;
 		private var _type : String;
 		private var _viewName : String;
-		// check if there is a timeline (defaul:t no timeline == 1 frame)
+		
+		// check if there is a timeline (default: no timeline == 1 frame)
 		private var _isTimeline : Boolean = false;
+		
 		// check the labels: default values are false
 		private var _labelsNeeded : Object = {show:false, hide:false, onShowFinished:false, onHideFinished:false};
+		
 		// misc
 		private var _target : MovieClip;
 		private var _mouseBlock : Sprite;
+		
 		// debugging (default no debuggin)
 		private static var _isDebugMode : Boolean = false;
+		
 		// auto stuff
 		private var _isAutoRemove : Boolean = false;
 		private var _isAutoHide : Boolean = false;
+		
 		// default the buttons are not clickable till animation is finished
 		private var _isAutoBlock : Boolean = true;
+		
 		// view styles
 		public static const VIEW_POPUP : String = "popup";
 		public static const VIEW_STATIC : String = "static";
 		public static const VIEW_ANIMATED : String = "animated";
 		public static const VIEW_DEFAULT : String = "default";
-
+		
+		// misc 2
 		private var isNotModel : Boolean = false;
+		private var isAlreadyCalled : Boolean = false;
+		
 		/**		 * constructor		 * 		 * @param inController	specific controller use for this view (default: null)		 */
 		public function View(inController : Controller = null, inType : String = VIEW_DEFAULT) {
 			// start hidden
@@ -144,6 +184,7 @@ package mvc.core {
 				stop();	// is already done, but what the hack
 			} else {
 				// is there an add to this timeline that is an movieclip?
+				// TODO: [mck] I'm not sure that this is clever to do... so remove?
 				for (var i : uint = 0;i < this.numChildren;i++) {
 					var _mc : MovieClip = this.getChildAt(i) as MovieClip;
 					if (_mc && _mc.totalFrames > 1) {
@@ -169,22 +210,26 @@ package mvc.core {
 			for (var i : uint = 0;i < labels.length;i++) {
 				var label : FrameLabel = labels[i];
 				switch(label.name) {
-					case "show":
+					case View.LABEL_SHOW:
 						// trace("## show");
+						// FIXME: [mck] :: little hack, to register the show... but doesn't work
+						// SHOW_FRAME = label.frame + 1;
 						SHOW_FRAME = label.frame;
 						_labelsNeeded.show = true;
 						break;
-					case "hide":
-						// trace("## hide");
+					case View.LABEL_HIDE:
+						// if (isDebugMode)trace("## " + toString() + " :: hide-label framenumber: " + label.frame);
+						// FIXME: [mck] :: little hack, to register the hide... but doesn't work
+						// HIDE_FRAME = label.frame + 1;
 						HIDE_FRAME = label.frame;
 						_labelsNeeded.hide = true;
 						break;
-					case "onShowFinished":
+					case View.LABEL_SHOW_FINISHED:
 						// trace("## onShowFinished");
 						SHOW_FINISHED_FRAME = label.frame;
 						_labelsNeeded.onShowFinished = true;
 						break;
-					case "onHideFinished":
+					case View.LABEL_HIDE_FINISHED:
 						// trace("## onHideFinished");
 						HIDE_FINISHED_FRAME = label.frame;
 						_labelsNeeded.onHideFinished = true;
@@ -234,21 +279,36 @@ package mvc.core {
 			var evt : ViewEvent;
 			switch (_frameLabel) {
 				case 'show':
-					if (_frameNumber == View.SHOW_FRAME){										
-						if (isDebugMode)trace("::---> " + toString() + " :: onShowFinished");
+					if (!isAlreadyCalled) {
+						trace(":: isAlreadyCalled methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
+						
+						isAlreadyCalled = true;
+						
+						if (isDebugMode) trace("::---> " + toString() + " :: show");
 						
 						evt = new ViewEvent(ViewEvent.ON_SHOW, this);
 						dispatchEvent(evt);
 					}
+					
+					if (_frameNumber == View.SHOW_FRAME){					
+						trace (":: frame number methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
+//						if (isDebugMode) trace("::---> " + toString() + " :: show");
+//						
+//						evt = new ViewEvent(ViewEvent.ON_SHOW, this);
+//						dispatchEvent(evt);
+					}
 					break;
 				case 'onShowFinished':
 					// trace('--->| onShowFinished ' + toString());
+					
+					isAlreadyCalled = false;
+					
 					_frameNumber == View.SHOW_FINISHED_FRAME;
 					
 					evt = new ViewEvent(ViewEvent.ON_SHOW_FINISHED, this);
 					dispatchEvent(evt);
 					
-					if (isDebugMode)trace("::--->| " + toString() + " :: onShowFinished");
+					if (isDebugMode) trace("::--->| " + toString() + " :: onShowFinished");
 					
 					_target.removeEventListener(Event.ENTER_FRAME, onTargetFrameHandler);
 					_target.stop();
@@ -258,17 +318,31 @@ package mvc.core {
 						_mouseBlock.visible = false;
 					break;
 				case 'hide':
-					if (_frameNumber == View.HIDE_FRAME) {
+					// TODO: [mck] >> doesn't work... but why?
+					if (!isAlreadyCalled) {
+						trace (":: isAlreadyCalled methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
 						
-						if (isDebugMode) trace("::|<--- " + toString() + " :: onHide");
+						isAlreadyCalled = true;
+						
+						if (isDebugMode) trace("::|<--- " + toString() + " :: hide");
 						
 						evt = new ViewEvent(ViewEvent.ON_HIDE, this);
 						dispatchEvent(evt);
+					}
+					
+					if (_frameNumber == View.HIDE_FRAME ) {
+						trace (":: frame number methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
+						
+//						if (isDebugMode) trace("::|<--- " + toString() + " :: hide");
+//						
+//						evt = new ViewEvent(ViewEvent.ON_HIDE, this);
+//						dispatchEvent(evt);
 					}
 					break;
 				case 'onHideFinished':
 					// trace('--- onHideFinished');
 					// trace('|<--- onHideFinished ' + toString());
+					isAlreadyCalled = false;
 					
 					_frameNumber == View.HIDE_FINISHED_FRAME;
 
@@ -341,7 +415,10 @@ package mvc.core {
 		}
 
 		public function destroy() : void {
-			// setTimeout(nextEvent, 50); // [mck] : original code
+			// setTimeout(nextEvent, 50); // [mck] : original code	
+			if (isNotModel) return;
+
+
 			// TODO: [mck] this works, but what why is it here?
 			if (_isTimeline) {
 				nextEvent();
