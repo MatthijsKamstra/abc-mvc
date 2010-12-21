@@ -16,7 +16,13 @@
  * 				
  * 	Show/trace the hidden stuff (debug trace / mouse blockers)
  * 		@example	
- * 				isDebugMode = true; // default is false 			
+ * 				isDebugMode = true; // default is false 
+ *
+ *
+ *	View is automatically added to the model (and added to the developersNavigation)
+ *		if you don't want that (for example a footer/header)
+ * 		@example	
+ * 				removeFromModel(); 			
  * 		
  */
 package mvc.core {
@@ -30,7 +36,7 @@ package mvc.core {
 	import flash.utils.setTimeout;
 
 	/**
-	 * every movieclip that want to reacte like a "View" needs labels with these names:
+	 * every movieclip that want to react like a "View" needs labels with these names:
 	 * 		>> show
 	 * 		>> hide
 	 * 		>> onShowFinished
@@ -280,7 +286,7 @@ package mvc.core {
 			switch (_frameLabel) {
 				case 'show':
 					if (!isAlreadyCalled) {
-						trace(":: isAlreadyCalled methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
+						if (isDebugMode) trace(":: isAlreadyCalled methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
 						
 						isAlreadyCalled = true;
 						
@@ -291,7 +297,7 @@ package mvc.core {
 					}
 					
 					if (_frameNumber == View.SHOW_FRAME){					
-						trace (":: frame number methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
+						if (isDebugMode) trace (":: frame number methode (" + _target.currentFrame + ") :: SHOW - " + _viewName);
 //						if (isDebugMode) trace("::---> " + toString() + " :: show");
 //						
 //						evt = new ViewEvent(ViewEvent.ON_SHOW, this);
@@ -320,7 +326,7 @@ package mvc.core {
 				case 'hide':
 					// TODO: [mck] >> doesn't work... but why?
 					if (!isAlreadyCalled) {
-						trace (":: isAlreadyCalled methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
+						if (isDebugMode) trace (":: isAlreadyCalled methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
 						
 						isAlreadyCalled = true;
 						
@@ -331,7 +337,7 @@ package mvc.core {
 					}
 					
 					if (_frameNumber == View.HIDE_FRAME ) {
-						trace (":: frame number methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
+						if (isDebugMode) trace (":: frame number methode (" + _target.currentFrame + ") :: HIDE - " + _viewName);
 						
 //						if (isDebugMode) trace("::|<--- " + toString() + " :: hide");
 //						
