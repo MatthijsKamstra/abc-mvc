@@ -4,4 +4,5 @@
     <AS3Classpath generateProblems="false" sdkBased="true" type="lib" useAsSharedCode="false">frameworks/libs/flex.swc</AS3Classpath>
     <AS3Classpath generateProblems="true" sdkBased="false" type="source" useAsSharedCode="false">source</AS3Classpath>
     <AS3Classpath generateProblems="false" sdkBased="false" type="source" useAsSharedCode="false">NOISELibrary</AS3Classpath>
+    <AS3Classpath generateProblems="false" sdkBased="false" type="lib" useAsSharedCode="false">swc/abc_mvc_assets.swc</AS3Classpath>
 </AS3Classpath>

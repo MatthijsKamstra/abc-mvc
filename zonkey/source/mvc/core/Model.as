@@ -1,4 +1,23 @@
+/**
+ * 
+ * check in another view (for example a FooterView that not changes) if a specific view is actief
+ * 			
+ * 		model.addEventListener(ViewNames.TIPSVIEW, onShowHandler);
+ * 		model.addEventListener(ViewNames.TIPSVIEW + Model.CLEAR, onHideHandler);
+ * 			
+ * 			
+ * 		private function onShowHandler(event : Event) : void {
+ *			// do something on show
+ *		}
+ *		private function onHideHandler(event : Event) : void {
+ *			// do something on hide
+ *		}
+ * 
+ */
 package mvc.core {
+	import com.asual.swfaddress.SWFAddress;
+	import com.asual.swfaddress.SWFAddressEvent;
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
@@ -14,6 +33,9 @@ package mvc.core {
 		private var _event : String = "";
 		private var _viewNameArray : Array = [];
 		private var _popupNameArray : Array = [];
+		private var _prettyPrintArray : Array = [];
+		private var _prettyPrint2Array : Array = [];
+		
 		private var _xml : XML;
 
 		// singleton
@@ -22,41 +44,66 @@ package mvc.core {
 				_allowInstantiation = true;
 				_instance = new Model();
 				_allowInstantiation = false;
+
 			}
 			return _instance;
 		}
+
 
 		public function Model() : void {
 			if (!_allowInstantiation) {
 				throw new Error("Error: Instantiation failed: Use Model.getInstance() instead of new.");
 			}
+			// SWFAddress.addEventListener(SWFAddressEvent.CHANGE, handleSWFAddress);
+			SWFAddress.addEventListener(SWFAddressEvent.EXTERNAL_CHANGE, handleSWFAddress);
 		}
 
-		/**		 * clear the model (data)		 */
-		public function clearModel() : void {
-			_data = null;
+		private function handleSWFAddress(event : SWFAddressEvent) : void {
+			//trace ( '+ Model.handleSWFAddress() - args: ' + [ event ] );
+			
+			var _arr:Array = SWFAddress.getPathNames();
+			//trace('_arr[0]: ' + typeof(_arr[0]));
+
+			//trace('_prettyPrintArray[_arr[0]]: ' + (_prettyPrintArray[_arr[0]]));
+			
+			switch (SWFAddress.getPath()) {
+				case '/':
+					// trace ("/");
+					// updateView(viewNameArray[0]);
+					break;
+			    default:
+					// updateView(event)			    
+			       //  trace(":: handleSWFAddress :: \rcase '"+SWFAddress.getPath()+"':\r\ttrace ('--- "+SWFAddress.getPath()+"');\r\tbreak;" );
+			}
 		}
 
-		/**		 * 		 */
-		public function updateView(event : String) : void {
-			// If no events defined yet, then send out the first event.			
-			if (!checkEventName(event)){
-				trace ("****** Check '"+event+"' event name, it doesn't exist! *******");
-				return;
+		/**
+		 * 		 */		public function updateView(event : String) : void {
+			// If no events defined yet, then send out the first event.
+			if (!checkEventName(event)){				trace ("****** Check '" + event + "' event name, it doesn't exist! *******");
+				//return;
+				event = viewNameArray[0];
 			}
 
 			if( _event.length == 0 ) {
 				_event = event;
 				dispatchEvent(new Event(event));
 			} else {
-				// Run the event to destroy the current event.
+				// Run the event to destroy the current event.
 				dispatchEvent(new Event(( _event + Model.CLEAR )));
-				// Then send out the new event and make that the current event.
-				_event = event;
-			}
-			// Send out an all events request.
+				// Then send out the new event and make that the current event.				_event = event;
+			}			// Send out an all events request.
 			dispatchEvent(new Event(Model.ALL_EVENTS));
 		}
+				/**
+		 * no show our hides are used here, just for the views who listen to this command
+		 * on hide, it will be automatically triggered		 */		public function sendInternalEvent(event : String) : void {			// TODO: [mck] does this work?
+			// SWFAddress.setValue(event);
+			dispatchEvent(new Event(event));
+		}
+
+		
+
 
 		// check if this viewname is present, otherwise the mvc will breaks
 		private function checkEventName (inEvent:String):Boolean{
@@ -71,16 +118,17 @@ package mvc.core {
 		}
 
 
-		/**		 * @example		Model.getInstance().showDefaultView();		 * 		 * first View initiated will be the default view		 */
-		public function showDefaultView() : void {
+		/**
+		 * @example		Model.getInstance().showDefaultView();		 * 		 * first View initiated will be the default view		 */		public function showDefaultView() : void {
+			// trace ("... show default view ...")
 			updateView(viewNameArray[0]);
 		}
 
-		/**		 * no show our hides are used here, just for the views who listen to this command		 * on hide, it will be automatically triggered		 */
-		public function sendInternalEvent(event : String) : void {
-			dispatchEvent(new Event(event));
-		}
 
+		/**		 * clear the model (data)		 */
+		public function clearModel() : void {
+			_data = null;
+		}
 		/**		 * convert data (untyped) to typed data		 */
 		private function typeData(inData : *) : void {
 			var _type : String = typeof (inData);
@@ -101,8 +149,18 @@ package mvc.core {
 					trace("case '" + _type + "':\r\ttrace ('--- " + _type + "');\r\tbreak;");
 			}
 		}
+		
+		
+		public function setPrettyPrint(inViewNames : String, inPrettyPrint : String) : void {
+			// trace ( '+ Model.setPrettyPrint() - args: ' + [ inViewNames, inPrettyPrint ] );
+			_prettyPrintArray[inViewNames] = inPrettyPrint;
+			_prettyPrint2Array.push(inViewNames,inPrettyPrint);
+			
+			//trace('_prettyPrintArray[inViewNames]: ' + (_prettyPrintArray[inViewNames]));
+		}
 
-		// ////////////////////////////////////// getter/setter // //////////////////////////////////////
+
+		//////////////////////////////////////// getter/setter ////////////////////////////////////////
 		/**		 * return untyped data		 */
 		public function get data() : * {
 			return _data;
@@ -134,7 +192,10 @@ package mvc.core {
 			_popupNameArray.push(inPopupName);
 		}
 
-		/**		 * return XML
+		public function get prettyPrintArray() : Array {
+			return _prettyPrintArray;
+		}		/**
+		 * return XML
 		 */
 		public function get xml() : XML {
 			var __xml : XML = _xml;
@@ -142,8 +203,8 @@ package mvc.core {
 				__xml = null;
 			return __xml;
 		}
-
-		/**		 * create a quick ViewName package		 */
+		/**		 * create a quick ViewName package
+		 */
 		public function outputViewNamePackage() : void {
 			trace("package nl.xxx.yyy.data.enum {" + "/**" + "* @author Matthijs Kamstra aka [mck]" + "*/" + "public class ViewNames {");
 			var array : Array = Model.getInstance().viewNameArray;
@@ -153,13 +214,14 @@ package mvc.core {
 			}
 			trace("}" + "}");
 		}
-
-		// ////////////////////////////////////// remove // //////////////////////////////////////	
-		/**		 * little hack to remove the automatic add from every view		 */
+		//////////////////////////////////////// remove ////////////////////////////////////////	
+		/**		 * little hack to remove the automatic add from every view
+		 */
 		public function removeViewNameFromArray() : void {
 			// only when you init a view, and you don't want it managed by the model,
 			// call this function to remove it from the show/hide list
 			_viewNameArray.pop();
 		}
+
 	}
 }
