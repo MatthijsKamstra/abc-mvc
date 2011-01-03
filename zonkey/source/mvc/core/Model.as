@@ -22,13 +22,15 @@ package mvc.core {
 	import flash.events.EventDispatcher;
 
 	public class Model extends EventDispatcher {
-		// singleton stuff
+		// singleton stuff
+
 		private static var _instance : Model;
 		private static var _allowInstantiation : Boolean;
-		// events
-		public static const ALL_EVENTS : String = "onAllEvents";
-		public static const CLEAR : String = "_destroy";
-		// vars
+		// events
+
+	
+		// vars
+
 		private var _data : * = null;
 		private var _event : String = "";
 		private var _viewNameArray : Array = [];
@@ -38,7 +40,8 @@ package mvc.core {
 		
 		private var _xml : XML;
 
-		// singleton
+		// singleton
+
 		public static function getInstance() : Model {
 			if (_instance == null) {
 				_allowInstantiation = true;
@@ -78,28 +81,38 @@ package mvc.core {
 		}
 
 		/**
-		 * 		 */		public function updateView(event : String) : void {
+		 * 
+		 */
+		public function updateView(event : String, extraInfo:* = null) : void {
 			// If no events defined yet, then send out the first event.
-			if (!checkEventName(event)){				trace ("****** Check '" + event + "' event name, it doesn't exist! *******");
+			
+			if (!checkEventName(event)){
+				trace ("****** Check '" + event + "' event name, it doesn't exist! *******");
 				//return;
 				event = viewNameArray[0];
 			}
 
 			if( _event.length == 0 ) {
 				_event = event;
-				dispatchEvent(new Event(event));
+				dispatchEvent(new ModelEvent(event,extraInfo));
 			} else {
 				// Run the event to destroy the current event.
-				dispatchEvent(new Event(( _event + Model.CLEAR )));
-				// Then send out the new event and make that the current event.				_event = event;
-			}			// Send out an all events request.
-			dispatchEvent(new Event(Model.ALL_EVENTS));
+				dispatchEvent(new ModelEvent( String(_event + ModelEvent.CLEAR), extraInfo ) );
+				// Then send out the new event and make that the current event.
+				_event = event;
+			}
+			// Send out an all events request.
+			dispatchEvent(new ModelEvent(ModelEvent.ALL_EVENTS,extraInfo));
 		}
-				/**
+		
+		/**
 		 * no show our hides are used here, just for the views who listen to this command
-		 * on hide, it will be automatically triggered		 */		public function sendInternalEvent(event : String) : void {			// TODO: [mck] does this work?
+		 * on hide, it will be automatically triggered
+		 */
+		public function sendInternalEvent(event : String) : void {
+			// TODO: [mck] does this work?
 			// SWFAddress.setValue(event);
-			dispatchEvent(new Event(event));
+			dispatchEvent(new ModelEvent(event));
 		}
 
 		
@@ -119,17 +132,25 @@ package mvc.core {
 
 
 		/**
-		 * @example		Model.getInstance().showDefaultView();		 * 		 * first View initiated will be the default view		 */		public function showDefaultView() : void {
-			// trace ("... show default view ...")
+		 * @example		Model.getInstance().showDefaultView();
+		 * 
+		 * first View initiated will be the default view
+		 */
+		public function showDefaultView() : void {
+			trace ("... show default view ...",viewNameArray[0])
 			updateView(viewNameArray[0]);
 		}
 
 
-		/**		 * clear the model (data)		 */
+		/**
+		 * clear the model (data)
+		 */
 		public function clearModel() : void {
 			_data = null;
 		}
-		/**		 * convert data (untyped) to typed data		 */
+		/**
+		 * convert data (untyped) to typed data
+		 */
 		private function typeData(inData : *) : void {
 			var _type : String = typeof (inData);
 			switch (_type) {
@@ -161,12 +182,16 @@ package mvc.core {
 
 
 		//////////////////////////////////////// getter/setter ////////////////////////////////////////
-		/**		 * return untyped data		 */
+		/**
+		 * return untyped data
+		 */
 		public function get data() : * {
 			return _data;
 		}
 
-		/**		 * add untyped data		 */
+		/**
+		 * add untyped data
+		 */
 		public function set data(data : *) : void {
 			_data = data;
 			typeData(_data);
@@ -194,7 +219,8 @@ package mvc.core {
 
 		public function get prettyPrintArray() : Array {
 			return _prettyPrintArray;
-		}		/**
+		}
+		/**
 		 * return XML
 		 */
 		public function get xml() : XML {
@@ -203,7 +229,9 @@ package mvc.core {
 				__xml = null;
 			return __xml;
 		}
-		/**		 * create a quick ViewName package
+
+		/**
+		 * create a quick ViewName package
 		 */
 		public function outputViewNamePackage() : void {
 			trace("package nl.xxx.yyy.data.enum {" + "/**" + "* @author Matthijs Kamstra aka [mck]" + "*/" + "public class ViewNames {");
@@ -214,8 +242,11 @@ package mvc.core {
 			}
 			trace("}" + "}");
 		}
-		//////////////////////////////////////// remove ////////////////////////////////////////	
-		/**		 * little hack to remove the automatic add from every view
+
+		//////////////////////////////////////// remove ////////////////////////////////////////	
+
+		/**
+		 * little hack to remove the automatic add from every view
 		 */
 		public function removeViewNameFromArray() : void {
 			// only when you init a view, and you don't want it managed by the model,
@@ -224,4 +255,4 @@ package mvc.core {
 		}
 
 	}
-}
+}

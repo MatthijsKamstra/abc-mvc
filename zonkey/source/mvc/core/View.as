@@ -95,7 +95,11 @@ package mvc.core {
 		private var isNotModel : Boolean = false;
 		private var isAlreadyCalled : Boolean = false;
 		
-		/**		 * constructor		 * 		 * @param inController	specific controller use for this view (default: null)		 */
+		/**
+		 * constructor
+		 * 
+		 * @param inController	specific controller use for this view (default: null)
+		 */
 		public function View(inController : Controller = null, inType : String = VIEW_DEFAULT) {
 			// start hidden
 			visible = false;
@@ -173,10 +177,12 @@ package mvc.core {
 			stageReady();
 		}
 
-		/*		* override this function when a view needs a stage
+		/*
+		* override this function when a view needs a stage
 		 * like 		stage.addEventListener (bla, bla);
 		 * 
-		 * @example 		override protected function stageReady():void {}		*/
+		 * @example 		override protected function stageReady():void {}
+		*/
 		protected function stageReady():void {
 		}
 
@@ -252,13 +258,18 @@ package mvc.core {
 			if (errorString.length > 0)
 				if (isDebugMode)
 					trace(this + " --->\n" + errorString);
-			// I recon that you need all labels, so they need all to be there
+
+			// I recon that you need all labels, so they need all to be there
 			return (errorString.length == 0);
 		}
 
-		/**		 * automaticly the view is added to the model.		 * If that is not wise (for example with navigation)		 * you should use this function to remove it from the model-list
+		/**
+		 * automaticly the view is added to the model.
+		 * If that is not wise (for example with navigation)
+		 * you should use this function to remove it from the model-list
 		 * 
-		 * 		 */
+		 * 
+		 */
 		public function removeFromModel() : void {
 			// TODO: [mck] fix that it can be done in the constructor and not only in the onStageAdd
 			// make sure that nothing else is removed...
@@ -270,13 +281,13 @@ package mvc.core {
 		public function registerEvents() : void {
 			// Abstract.
 			model.addEventListener(_viewName, show);
-			model.addEventListener(( _viewName + Model.CLEAR ), hide);
+			model.addEventListener(( _viewName + ModelEvent.CLEAR ), hide);
 		}
 
 		public function unRegisterEvents() : void {
 			// Abstract.
 			model.removeEventListener(_viewName, show);
-			model.removeEventListener(( _viewName + Model.CLEAR ), hide);
+			model.removeEventListener(( _viewName + ModelEvent.CLEAR ), hide);
 		}
 
 		private function onTargetFrameHandler(event : Event) : void {
@@ -362,7 +373,8 @@ package mvc.core {
 					visible = false;
 					destroy();
 					
-					// TODO: [mck] mouseblock needs to be on top of everything					if (isAutoBlock)
+					// TODO: [mck] mouseblock needs to be on top of everything
+					if (isAutoBlock)
 						_mouseBlock.visible = false;
 					if (isAutoRemove)
 						this.parent.removeChild(this);
@@ -370,16 +382,23 @@ package mvc.core {
 				default:
 					// just in case something goes wrong
 					_target.removeEventListener(Event.ENTER_FRAME, onTargetFrameHandler);
-					// trace("case '" + value + "':\r\ttrace ('--- " + value + "');\r\tbreak;");
+					// trace("case '" + value + "':\r\ttrace ('--- " + value + "');\r\tbreak;");
+
 			}
 		}
 
-		/**		 * show this view		 * default: visibility = true		 */
+		/**
+		 * show this view
+		 * default: visibility = true
+		 */
 		public function show(event : Event = null) : void {
-			// override this function to use your custom show (tweens/animations)
-			// override public function show( event : Event ) : void {}
+			// override this function to use your custom show (tweens/animations)
+
+			// override public function show( event : Event ) : void {}
+
 			visible = true;
-			// 1 frame movieclips and timeline need to be visible
+			// 1 frame movieclips and timeline need to be visible
+
 			if (isDebugMode)
 				trace(":: " + toString() + " :: show");
 				
@@ -396,10 +415,15 @@ package mvc.core {
 			}
 		}
 
-		/**		 * hide this view		 * default: visibility = false		 */
+		/**
+		 * hide this view
+		 * default: visibility = false
+		 */
 		public function hide(event : Event = null) : void {
-			// override this function to use your custom hide (tweens/animations)
-			// override public function hide( event : Event ) : void {}
+			// override this function to use your custom hide (tweens/animations)
+
+			// override public function hide( event : Event ) : void {}
+
 			if (isDebugMode){
 				trace(":: " + getQualifiedClassName(this) + " :: hide");
 			}
@@ -421,7 +445,8 @@ package mvc.core {
 		}
 
 		public function destroy() : void {
-			// setTimeout(nextEvent, 50); // [mck] : original code	
+			// setTimeout(nextEvent, 50); // [mck] : original code
+	
 			if (isNotModel) return;
 
 
@@ -438,7 +463,8 @@ package mvc.core {
 			_model.sendInternalEvent(_model.currentEvent);
 		}
 
-		// blocker
+		// blocker
+
 		private function mouseBlocker() : void {
 			_mouseBlock = new Sprite();
 			_mouseBlock.graphics.clear();
@@ -450,7 +476,8 @@ package mvc.core {
 			this.addChild(_mouseBlock);
 		}
 
-		////////////////////////////////////////  getter/setter ////////////////////////////////////////             
+		////////////////////////////////////////  getter/setter ////////////////////////////////////////             
+
 		public function set model(inModel : Model) : void {
 			_model = inModel;
 		}
@@ -504,9 +531,10 @@ package mvc.core {
 			_isAutoBlock = value;
 		}
 
-		// //////////////////////////////////////  // ////////////////////// // // // //////////
+		// //////////////////////////////////////  // ////////////////////// // // // //////////
+
 		public override function toString() : String {
 			return getQualifiedClassName(this);
 		}
 	}
-}
+}
